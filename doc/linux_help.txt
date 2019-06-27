@@ -1,0 +1,33 @@
+##########################
+## Helpful linux commands
+##########################
+
+# It is always useful to know how to use a command. The following are very helpful:
+
+man ls
+
+ls --help
+
+# Find out current directory
+
+pwd
+
+# Change directory 
+
+cd ~/path/to/directory (the '~' indicates that the path is relative to the home directory. To find your home directory, run: env | grep HOME)
+
+# Go up one directory
+
+cd .. (you can also use this as a relative path for example to go up one directory and into another: cd ../sister_directory)
+
+# list files in current directory
+
+ls -l
+
+
+
+
+
+
+
+

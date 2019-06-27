@@ -1,0 +1,26 @@
+######################################################
+## Here are some helpful git tips for getting started
+######################################################
+
+# How to install gitk (tool for visualizing git version tree)
+sudo apt install gitk
+
+# launch gitk from the repo directory
+cd ~/git/rpi-os-image
+gitk &
+
+# list modified files
+git status
+
+# stage a file for committing
+git add <filename>
+git status
+
+# commit staged files
+git commit -m "this is your commit message that people will see"
+
+# push your local chagnes 
+git push origin HEAD
+
+# view your changes in the version tree
+gitk &
