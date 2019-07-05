@@ -1,0 +1,109 @@
+###################################
+### On ubuntu VM/PC (amd64)
+###################################
+# Reference: https://linuxconfig.org/how-to-install-docker-on-ubuntu-18-04-bionic-beaver
+
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+sudo gedit /etc/apt/sources.list.d/docker.list
+	# Add the following line:
+	deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+sudo apt update
+sudo apt install docker-ce
+docker --version
+#  Results in -> Docker version 18.09.7, build 2d0083d
+
+####################################
+### On raspberry pi running ubuntu (armhf)
+####################################
+# Reference: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+## Expected output is:
+# pub   rsa4096 2017-02-22 [SCEA]
+#       9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88
+# uid           [ unknown] Docker Release (CE deb) <docker@docker.com>
+# sub   rsa4096 2017-02-22 [S]
+# Add the docker repository
+sudo add-apt-repository \
+   "deb [arch=armhf] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+sudo apt update
+# Install latest version of Docker CE
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+docker --version
+#  Results in -> Docker version 18.09.7, build 2d0083d
+
+#########################################################
+### The following steps are common to either installation
+#########################################################
+
+# Add user to the docker group
+sudo usermod -a -G docker $USER
+
+# Reboot for the change to take effect
+sudo reboot
+
+# Check that docker is running
+sudo systemctl status docker
+
+# Confirm that installation is working properly
+sudo docker run hello-world
+
+# To push changes to docker hub and update images, you need to create an account on https://hub.docker.com/
+
+############################################################
+### Use the OpenCV image from docker hub to display a usb camera feed
+### Note: Slightly different process for RPI vs. PC/VM
+### On a VM, you may have additional steps not shown because you will 
+### likely need to give the VM access to the host's USB port...it may mount
+### the video device automatically, but USB storage devices require changes
+### to the virtualbox manager's USB settings.
+############################################################
+# Pull the following docker image for OpenCV on Ubuntu
+# https://hub.docker.com/r/dymat/opencv
+# PC
+docker pull dymat/opencv
+# Raspberry pi
+docker pull dymat/opencv:arm32v7
+
+## Results in output:
+# arm32v7: Pulling from dymat/opencv
+# 12d2fa1549d5: Pull complete 
+# 5b66e47c4b68: Pull complete 
+# 039f9b32d330: Pull complete 
+# cabb4c40729a: Pull complete 
+# c83576329d6d: Pull complete 
+# 9cae184885be: Pull complete 
+# Digest: sha256:60d3ff5b700afaf801b8270b8c93f75acd5a84c7c29c25bca124185a50832e85
+# Status: Downloaded newer image for dymat/opencv:arm32v7
+
+# Clone the perception repo to ~/git/perception
+git clone https://github.com/thebrothersproject/perception.git ~/git/perception
+
+### Different steps below for PC vs. RPI
+# Plug in your usb webcam
+# Run webcam PC using latest dymat/opencv image (notice that this does not use the arm32v7 image)
+docker run -it --rm --device=/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v ~/git/perception/scripts:/data dymat/opencv python /data/test_webcam.py
+
+# To run webcam on raspberry pi, use the dymat/opencv:arm32v7 image:
+# Note*: I've not tested this yet...haven't had a display handy. 
+# We should come up with a way to stream video to a webpage so that a display is not required.
+docker run -it --rm --device=/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v ~/git/perception/scripts:/data dymat/opencv:arm32v7 python /data/test_webcam.py
+
+
+#################################################
+### Other interesting docker containers (You can browse on docker hub for more):
+#################################################
+# Gazebo is useful for robot simulation
+https://hub.docker.com/_/gazebo
+
+# ROS with various base operating systems and ROS versions (including Melodic/Bionic)
+https://hub.docker.com/_/ros
+#################################################

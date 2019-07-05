@@ -90,5 +90,5 @@ ssh david@192.168.1.29
 
 # if this fails, run "sudo systemctl status ssh" on the rpi again to see if there are any error messages.
 
-### Congratulations, your Raspberry Pi is all set up. At this point we'll install ROS (see doc/ROS_setup_guide.txt)
+### Congratulations, your Raspberry Pi is all set up. At this point we'll install Docker (see doc/Docker_installation.txt)
 

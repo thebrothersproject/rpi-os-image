@@ -1,0 +1,60 @@
+# STOP! 
+######## THIS DOCUMENT IS NOT RECOMMENDED FOR THE BROTHERS PROJECT
+######## Docker should allow us to use openCV without installing on our machines.
+######## See the doc/Docker_installation.txt file instead
+
+# How to install OpenCV 4 on Ubuntu
+
+1) Install OpenCV dependencies
+
+sudo apt install build-essential cmake git pkg-config libgtk-3-dev
+sudo apt install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev
+sudo apt install libjpeg-dev libpng-dev libtiff-dev gfortran openexr libatlas-base-dev
+sudo apt install python3-dev python3-numpy libtbb2 libtbb-dev libdc1394-22-dev
+
+2) Clone the OpenCV source code
+
+mkdir ~/opencv_build && cd ~/opencv_build
+git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+
+3) Configure OpenCV with CMake
+
+cd ~/opencv_build/opencv
+mkdir build && cd build
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_C_EXAMPLES=ON \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D ENABLE_PRECOMPILED_HEADERS=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \
+    -D BUILD_EXAMPLES=ON ..
+
+4) Compile OpenCV
+
+** Note: The -j1 specifies the number of jobs which can be processed by the cpu at once. Typically, it seems people recommend to base this number on the number of cores you've allocated to your machine. If you're using a VM you may want to configure this setting to increase the number of CPUs. This will make the build go faster. I don't think that you are limited to the number of cores necessarily, but its safer that way. The build may crash due to lack of resources or cause your CPU to overheat if the value is too high. 
+
+** nproc will tell you how many cores your machine has. Mine has two, but when I used -j2, my PC overheated (perhaps because of old hardware). -j1 took a while but got the job done. On the raspberry pi, I had nproc=4. I used -j2 for the pi because I didn't mind waiting a little longer if it meant not having to re-start the build.
+
+make -j1 
+
+5) Install OpenCV
+
+sudo make install
+
+6) Verify OpenCV installation
+
+pkg-config --modversion opencv4
+
+# The output should be some version 4.1.x
+
+python3 -c "\
+import cv2
+print(cv2.__version__)"
+
+# The output should be some version 4.1.x-pre
+
+

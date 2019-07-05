@@ -1,4 +1,10 @@
-# Install ROS Melodic Morenia with the following commands:
+# STOP!
+######## THIS DOCUMENT IS NOT RECOMMENDED FOR THE BROTHERS PROJECT
+######## Docker should allow us to use ROS without installing on our machines.
+######## See the doc/Docker_installation.txt file instead
+
+# Install ROS Melodic Morenia with the following commands (Requires 1.9 GB of disk space):
+# I used these steps to install on my PC (for development/playback/visualization) and on the raspberry pi where binaries will run.
 
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
