@@ -90,13 +90,29 @@ git clone https://github.com/thebrothersproject/perception.git ~/git/perception
 ### Different steps below for PC vs. RPI
 # Plug in your usb webcam
 # Run webcam PC using latest dymat/opencv image (notice that this does not use the arm32v7 image)
+# For PC:
 docker run -it --rm --device=/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v ~/git/perception/scripts:/data dymat/opencv python /data/test_webcam.py
 
 # To run webcam on raspberry pi, use the dymat/opencv:arm32v7 image:
-# Note*: I've not tested this yet...haven't had a display handy. 
 # We should come up with a way to stream video to a webpage so that a display is not required.
+# For PI:
 docker run -it --rm --device=/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v ~/git/perception/scripts:/data dymat/opencv:arm32v7 python /data/test_webcam.py
 
+# Note*: On the PI, I initially got the warning:
+# No protocol specified
+# Gtk-WARNING **: cannot open display :0
+# To resolve this, I ran "xhost +local:docker" on my host prior to running the docker container. This causes X to allow local socket connections from the docker client which otherwise would not have permissions to create a GUI. This recommendation came from: https://stackoverflow.com/questions/28392949/running-chromium-inside-docker-gtk-cannot-open-display-0
+
+# Here is an explanation of the above "docker run" command: (For reference: https://docs.docker.com/engine/reference/commandline/run/)
+"docker run" calls the run command from docker
+"-it" Specifies the "i" and "t" arguements for docker run. "-i" causes the STDIN to remain open even if not attached. "-t" results in allocation of a Pseudo TTY...I don't know all of the ins and outs of what this means, but we could google it if we cared...
+"--rm" automatically remove container once complete.
+"--device=/dev/video0" gives the docker container access to the video0 device from the host. This is our usb webcam.
+"-v /tmp/.X11-unix:/tmp/.X11-unix" Bind mounts the volume /tmp/.X11-unix from the host to the path /tmp/.X11-unix of the container. This volume is used by X to generate the GUI displaying the webcam feed.
+"-e DISPLAY=$DISPLAY" Sets the DISPLAY environment variable of the docker container to be equal to the value of the DISPLAY environment variable of the host. Again, used by X to generate the GUI displaying the webcam feed.
+"-v ~/git/perception/scripts:/data" mount the host directory containing our scripts to the path in the docker container "/data". This allows us to call scripts on the host from within the container using the path /data.
+"dymat/opencv:arm32v7" specifies the container we wish to run
+"python /data/test_webcam.py" inside of the docker container run the script /data/test_webcam.py using python.
 
 #################################################
 ### Other interesting docker containers (You can browse on docker hub for more):
