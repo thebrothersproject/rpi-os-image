@@ -7,8 +7,8 @@
 
 sudo apt-get install git
 git --version
-git config --global user.name "<your name>"
-git config --global user.email "<your email>"
+git config --global user.name "John Smith"
+git config --global user.email "John Smith@gmail.com"
 
 2) Clone the repository
 
